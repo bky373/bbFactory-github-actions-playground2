@@ -23,6 +23,7 @@ jobs:
           done
           
           if [ "$success" = false ]; then
+            echo "\n" >> $GITHUB_STEP_SUMMARY
             echo ":warning: 위 파일들의 마지막에 줄 바꿈(line break)을 추가해주세요." >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
