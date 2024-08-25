@@ -9,13 +9,13 @@ jobs:
     steps:
       - name: Check files without newline at end
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUMBER=${{ github.event.number }}
           
           echo "Files without newline at end:"
           
-          files_without_newline=$(gh pr view $PR_NUMBER --json files \
+          files_without_newline=$(gh pr view $PR_NUMBER --json files --repo ${{ github.repository }} \
             | jq -r '.files[] | select(.patch != null and (.patch | endswith("\n") | not)) | .path')
           
           if [ -n "$files_without_newline" ]; then
