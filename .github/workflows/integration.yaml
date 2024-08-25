@@ -23,5 +23,5 @@ jobs:
           done
           
           if [ "$success" = false ]; then
-            echo "\n ::warning:: 위 파일들에 공백 줄을 추가해주세요:" >> $GITHUB_STEP_SUMMARY
+            echo ":warning: 위 파일들에 공백 줄을 추가해주세요:" >> $GITHUB_STEP_SUMMARY
           fi
