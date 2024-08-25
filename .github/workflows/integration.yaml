@@ -14,10 +14,10 @@ jobs:
       - name: Find files missing end line break
         run: |
           files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
-          echo "files: $files"
           files_without_newline=""
           for file in $files; do
             if [ "$(tail -c 1 $file | wc -l)" -eq 0 ]; then
+              echo "file: $file"
               files_without_newline+=("$file")
             fi
           done
