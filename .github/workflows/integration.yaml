@@ -31,10 +31,10 @@ jobs:
             fi
           done
           
-          if [ ${#files_without_newline[@]} -gt 0 ]; then
-            json_files=$(printf '%s\n' "${files_without_newline[@]}" | jq -R -s -c 'split("\n")[:-1]')
-            echo "files_without_newline: $json_files"
-            echo "files=$json_files" >> $GITHUB_OUTPUT
+          if [ -n "$files_without_newline" ]; then
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            echo -e "$files_without_newline" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
             exit 1
           fi
 
