@@ -7,6 +7,13 @@ jobs:
   linelint:
     runs-on: ubuntu-latest
     steps:
+      - name: Get list of changed files
+        id: changed-files
+        run: |
+          changed_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | jq -R -s -c 'split("\n")[:-1]')
+          echo "changed_files: $changed_files"
+          echo "files=$changed_files" >> $GITHUB_OUTPUT
+
       - name: Check files without newline at end
         run: |
           files_without_newline=$(git diff --name-only ${{ github.event.pull_request.base.sha }} | while read file; do
