@@ -4,25 +4,47 @@ on:
   pull_request:
 
 jobs:
-  linelint:
+  line-ending-check:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Get list of changed files
         id: changed-files
         run: |
-          changed_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | jq -R -s -c 'split("\n")[:-1]')
-          echo "changed_files: $changed_files"
-          echo "files=$changed_files" >> $GITHUB_OUTPUT
+          changed_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$changed_files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Check files without newline at end
+      - name: Check for missing newlines
+        id: newline-check
         run: |
-          files_without_newline=(${{ steps.changed-files.outputs.files }} | while read file; do
-            if [ -f "$file" ] && [ "$(tail -c1 "$file" | wc -l)" -eq 0 ]; then
-              echo "$file"
+          readarray -t changed_files <<< "${{ steps.changed-files.outputs.files }}"
+          files_without_newline=""
+          for file in "${changed_files[@]}"; do
+            if [ -f "$file" ] && [ "$(tail -c 1 "$file" | wc -l)" -eq 0 ]; then
+              files_without_newline+="- ${file}\n"  # 포맷을 맞추기 위해 파일 이름을 백틱으로 감쌉니다.
             fi
-          done)
-          
+          done
           if [ -n "$files_without_newline" ]; then
             echo "Files without newline at end:"
-            echo "$files_without_newline"
-            echo "::warning::Found files without newline at end"
+            echo -e "$files_without_newline"
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            echo -e "$files_without_newline" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Set Job Summary
+        if: failure()
+        run: |
+          if [ -n '${{ steps.newline-check.outputs.files }}' ]; then
+          echo "🛠️ 아래 파일들에 공백 줄을 추가해주세요:" >> $GITHUB_STEP_SUMMARY
+          echo '${{ steps.newline-check.outputs.files }}' |
+            jq -r '.[]' |
+            sed 's/^/- /' >> $GITHUB_STEP_SUMMARY
+          fi
