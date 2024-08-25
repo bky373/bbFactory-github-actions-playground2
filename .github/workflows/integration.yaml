@@ -8,16 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check files without newline at end
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          PR_NUMBER=${{ github.event.number }}
-          
-          echo "Files without newline at end:"
-          
-          files_without_newline=$(gh pr view $PR_NUMBER --json files --repo ${{ github.repository }} \
-            | jq -r '.files[] | select(.patch != null and (.patch | endswith("\n") | not)) | .path')
+          files_without_newline=$(git diff --name-only ${{ github.event.pull_request.base.sha }} | while read file; do
+            if [ -f "$file" ] && [ "$(tail -c1 "$file" | wc -l)" -eq 0 ]; then
+              echo "$file"
+            fi
+          done)
           
           if [ -n "$files_without_newline" ]; then
+            echo "Files without newline at end:"
             echo "$files_without_newline"
             echo "::warning::Found files without newline at end"
