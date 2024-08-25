@@ -16,7 +16,7 @@ jobs:
 
       - name: Check files without newline at end
         run: |
-          files_without_newline=$(git diff --name-only ${{ github.event.pull_request.base.sha }} | while read file; do
+          files_without_newline=${{ steps.changed-files.outputs.files }} | while read file; do
             if [ -f "$file" ] && [ "$(tail -c1 "$file" | wc -l)" -eq 0 ]; then
               echo "$file"
             fi
