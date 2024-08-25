@@ -23,13 +23,9 @@ jobs:
       - name: Check for missing newlines
         id: newline-check
         run: |
-          readarray -t changed_files <<< "${{ steps.changed-files.outputs.files }}"
-          files_without_newline=""
-          for file in "${changed_files[@]}"; do
-            if [ -f "$file" ] && [ "$(tail -c 1 '$file' | wc -l)" -eq 0 ]; then
-              files_without_newline+=("$file")
-            fi
-          done
+          changed_files=$(echo "${{ steps.changed-files.outputs.files }}")
+          
+          files_without_newline=$(find "$changed_files" -type f -exec grep -q -m 1 '$' {} \; -print0)
           
           if [ -n "$files_without_newline" ]; then
             echo "files<<EOF" >> $GITHUB_OUTPUT
