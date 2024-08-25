@@ -8,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check for missing newlines
-        id: newline-check
+      - name: Check for missing newlines in changed files
+          id: newline-check
         run: |
-          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} |
-            find -type f -exec grep -q -m 1 '$' {} \; -print0 |
+          changed_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+          find "$changed_files" -type f -exec grep -q -m 1 '$' {} \; -print0 |
             xargs -0 -n 1 -t echo >> $GITHUB_STEP_SUMMARY
           
           if [ $? -ne 0 ]; then
-            echo "️ 아래 파일들에 공백 줄을 추가해주세요:" >> $GITHUB_STEP_SUMMARY
+            echo "️ 아래 변경된 파일들에 공백 줄을 추가해주세요:" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
