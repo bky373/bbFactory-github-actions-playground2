@@ -17,7 +17,7 @@ jobs:
           success=true
           for file in $files; do
             if [ "$(tail -c 1 $file | wc -l)" -eq 0 ]; then
-              echo "> $file" >> $GITHUB_STEP_SUMMARY
+              echo "> - $file" >> $GITHUB_STEP_SUMMARY
               success=false
             fi
           done
