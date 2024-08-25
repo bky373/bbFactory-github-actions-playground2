@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Find files missing end line break
         run: |
           files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
