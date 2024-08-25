@@ -1,4 +1,4 @@
-name: 🔄 Integration
+name: Automation
 
 on:
   pull_request_target:
