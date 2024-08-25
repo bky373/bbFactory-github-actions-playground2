@@ -17,13 +17,12 @@ jobs:
           success=true
           for file in $files; do
             if [ "$(tail -c 1 $file | wc -l)" -eq 0 ]; then
-              echo "- $file" >> $GITHUB_STEP_SUMMARY
+              echo "> $file" >> $GITHUB_STEP_SUMMARY
               success=false
             fi
           done
           
           if [ "$success" = false ]; then
-            echo "\n" >> $GITHUB_STEP_SUMMARY
             echo ":warning: 위 파일들의 마지막에 줄 바꿈(line break)을 추가해주세요." >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
