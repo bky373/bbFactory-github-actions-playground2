@@ -27,7 +27,7 @@ jobs:
           files_without_newline=""
           for file in "${changed_files[@]}"; do
             if [ -f "$file" ] && [ "$(tail -c 1 "$file" | wc -l)" -eq 0 ]; then
-              files_without_newline+="- ${file}\n"
+              files_without_newline+="- ${file}"
             fi
           done
           
