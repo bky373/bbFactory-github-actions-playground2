@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check for missing newlines in changed files
-          id: newline-check
+        id: newline-check
         run: |
           changed_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
           find "$changed_files" -type f -exec grep -q -m 1 '$' {} \; -print0 |
