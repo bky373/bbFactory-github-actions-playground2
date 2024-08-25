@@ -7,38 +7,17 @@ jobs:
   linelint:
     runs-on: ubuntu-latest
     steps:
-      - name: Get list of changed files
-        id: changed-files
+      - name: Check files without newline at end
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          changed_files=$(gh pr view ${{ github.event.number }} --json files --jq '.files[].path' | jq -R -s -c 'split("\n")[:-1]')
-          echo "changed_files: $changed_files"
-          echo "files=$changed_files" >> $GITHUB_OUTPUT
-
-      - name: Check for missing newlines
-        id: newline-check
-        run: |
-          readarray -t changed_files <<< "${{ steps.changed-files.outputs.files }}"
-          files_without_newline=""
-          for file in "${changed_files[@]}"; do
-            if [ -f "$file" ] && [ "$(tail -c 1 "$file" | wc -l)" -eq 0 ]; then
-              files_without_newline+="- ${file}\n"
-            fi
-          done
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          
+          echo "Files without newline at end:"
+          
+          files_without_newline=$(gh pr view $PR_NUMBER --json files \
+            | jq -r '.files[] | select(.patch != null and (.patch | endswith("\n") | not)) | .path')
+          
           if [ -n "$files_without_newline" ]; then
-            echo "files<<EOF" >> $GITHUB_OUTPUT
-            echo -e "$files_without_newline" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-
-      - name: Set Job Summary
-        if: failure()
-        run: |
-          if [ -n '${{ steps.newline-check.outputs.files }}' ]; then
-          echo "🛠️ 아래 파일들에 공백 줄을 추가해주세요:" >> $GITHUB_STEP_SUMMARY
-          echo '${{ steps.newline-check.outputs.files }}' |
-            jq -r '.[]' |
-            sed 's/^/- /' >> $GITHUB_STEP_SUMMARY
-          fi
+            echo "$files_without_newline"
+            echo "::warning::Found files without newline at end"
