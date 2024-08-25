@@ -27,15 +27,14 @@ jobs:
           files_without_newline=""
           for file in "${changed_files[@]}"; do
             if [ -f "$file" ] && [ "$(tail -c 1 "$file" | wc -l)" -eq 0 ]; then
-              files_without_newline+="- ${file}\n"  # 포맷을 맞추기 위해 파일 이름을 백틱으로 감쌉니다.
+              files_without_newline+="- ${file}\n"
             fi
           done
-          if [ -n "$files_without_newline" ]; then
-            echo "Files without newline at end:"
-            echo -e "$files_without_newline"
-            echo "files<<EOF" >> $GITHUB_OUTPUT
-            echo -e "$files_without_newline" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+          
+          if [ ${#files_without_newline[@]} -gt 0 ]; then
+            json_files=$(printf '%s\n' "${files_without_newline[@]}" | jq -R -s -c 'split("\n")[:-1]')
+            echo "files_without_newline: $json_files"
+            echo "files=$json_files" >> $GITHUB_OUTPUT
             exit 1
           fi
 
