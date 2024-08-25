@@ -7,39 +7,15 @@ jobs:
   line-ending-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get list of changed files
-        id: changed-files
-        run: |
-          changed_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
-          echo "files<<EOF" >> $GITHUB_OUTPUT
-          echo "$changed_files" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
+      - uses: actions/checkout@v4
       - name: Check for missing newlines
         id: newline-check
         run: |
-          changed_files=$(echo "${{ steps.changed-files.outputs.files }}")
+          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} |
+            find -type f -exec grep -q -m 1 '$' {} \; -print0 |
+            xargs -0 -n 1 -t echo >> $GITHUB_STEP_SUMMARY
           
-          files_without_newline=$(find "$changed_files" -type f -exec grep -q -m 1 '$' {} \; -print0)
-          
-          if [ -n "$files_without_newline" ]; then
-            echo "files<<EOF" >> $GITHUB_OUTPUT
-            echo -e "$files_without_newline" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+          if [ $? -ne 0 ]; then
+            echo "️ 아래 파일들에 공백 줄을 추가해주세요:" >> $GITHUB_STEP_SUMMARY
             exit 1
-          fi
-
-      - name: Set Job Summary
-        if: failure()
-        run: |
-          if [ -n '${{ steps.newline-check.outputs.files }}' ]; then
-          echo "🛠️ 아래 파일들에 공백 줄을 추가해주세요:" >> $GITHUB_STEP_SUMMARY
-          echo '${{ steps.newline-check.outputs.files }}' |
-            jq -r '.[]' |
-            sed 's/^/- /' >> $GITHUB_STEP_SUMMARY
           fi
