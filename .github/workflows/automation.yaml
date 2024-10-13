@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Get previous PR author and assign as reviewer
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           current_repo=${{ github.repository }}
           current_pr_number=${{ github.event.pull_request.number }}
