@@ -31,5 +31,3 @@ jobs:
           previous_pr_author=$(gh pr list --limit 2 --json author --jq '.[1].author.login')
           
           gh pr edit $current_pr_number --add-reviewer $previous_pr_author
-          
-          echo "Assigned $previous_pr_author as reviewer to PR #$current_pr_number"
