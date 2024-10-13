@@ -17,9 +17,8 @@ jobs:
         with:
           repo-token: ${{ github.token }}
 
-  assign_reviewer:
+  assign-reviewer:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Get previous PR author and assign as reviewer
         env:
@@ -27,20 +26,13 @@ jobs:
         run: |
           current_repo=${{ github.repository }}
           current_pr_num=${{ github.event.number }}
-          
-          # 이전 PR의 작성자 가져오기 (열린 PR 우선, 없으면 닫힌 PR로부터)
-          previous_pr_author=$(gh pr list --repo $current_repo --limit 2 --json author,number \
-            --jq 'map(select(.number != '$current_pr_num'))[0].author.login')
-          
-          # 열린 PR이 없는 경우 닫힌 PR 확인 (이때 현재 PR의 작성자와 다른 작성자를 선택)
-          if [ -z "$previous_pr_author" ]; then
-            previous_pr_author=$(gh pr list --repo $current_repo --limit 5 --state closed --json author \
-              --jq '.[] | select(.author.login != "${{ github.actor }}") | .author.login' | head -n 1)
-          fi
-          
+
+          # 최근 5개의 PR 중에서 현재 PR 작성자와 다른 작성자 찾기
+          previous_pr_author=$(gh pr list --repo $current_repo --limit 5 --state all --json number,author \
+            --jq '[.[] | select(.number != '$current_pr_num' and .author.login != "'$current_pr_author'")][0].author.login')
+
           if [ -n "$previous_pr_author" ]; then
             gh pr edit $current_pr_num --repo $current_repo --add-reviewer $previous_pr_author
-            echo "Assigned $previous_pr_author as reviewer to PR #$current_pr_num"
           else
-            echo "No previous PR author found to assign as reviewer"
+            echo "❌ No previous PR author found to assign as reviewer"
           fi
