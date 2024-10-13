@@ -37,4 +37,5 @@ jobs:
             gh pr edit $current_pr_num --repo $current_repo --add-reviewer bbFactory
           else
             echo "❌ No previous PR author found to assign as reviewer"
+            exit 1
           fi
