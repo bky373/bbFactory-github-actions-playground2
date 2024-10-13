@@ -36,7 +36,7 @@ jobs:
           fi
           
           if [ -n "$previous_pr_author" ]; then
-            gh pr edit $current_pr_number --repo $current_repo --add-reviewer $previous_pr_author
+            gh pr edit $current_pr_number --add-reviewer bbFactory
             echo "Assigned $previous_pr_author as reviewer to PR #$current_pr_number"
           else
             echo "No previous PR author found to assign as reviewer"
