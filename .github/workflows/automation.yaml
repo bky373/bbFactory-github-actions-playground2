@@ -20,25 +20,28 @@ jobs:
   assign_reviewer:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Setup GitHub CLI
+        uses: cli/cli@v2
 
       - name: Get previous PR author and assign as reviewer
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          current_pr_number=$(gh pr view --json number -q .number)
+          echo "$GITHUB_TOKEN" | gh auth login --with-token
+          
+          current_pr_number=${{ github.event.pull_request.number }}
+          current_repo=${{ github.repository }}
           
           # 이전 PR의 작성자 가져오기 (열린 PR 우선, 없으면 닫힌 PR)
-          previous_pr_author=$(gh pr list --limit 2 --json author --jq 'map(select(.number != '$current_pr_number'))[0].author.login')
+          previous_pr_author=$(gh pr list --repo $current_repo --limit 2 --json author,number --jq 'map(select(.number != '$current_pr_number'))[0].author.login')
           
           if [ -z "$previous_pr_author" ]; then
             # 열린 PR이 없는 경우 닫힌 PR 확인
-            previous_pr_author=$(gh pr list --limit 1 --state closed --json author --jq '.[0].author.login')
+            previous_pr_author=$(gh pr list --repo $current_repo --limit 1 --state closed --json author --jq '.[0].author.login')
           fi
           
           if [ -n "$previous_pr_author" ]; then
-            gh pr edit $current_pr_number --add-reviewer $previous_pr_author
+            gh pr edit $current_pr_number --repo $current_repo --add-reviewer $previous_pr_author
             echo "Assigned $previous_pr_author as reviewer to PR #$current_pr_number"
           else
             echo "No previous PR author found to assign as reviewer"
