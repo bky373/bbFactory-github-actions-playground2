@@ -19,6 +19,7 @@ jobs:
 
   assign_reviewer:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Get previous PR author and assign as reviewer
         env:
