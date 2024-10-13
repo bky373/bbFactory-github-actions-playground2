@@ -32,9 +32,10 @@ jobs:
           previous_pr_author=$(gh pr list --repo $current_repo --limit 2 --json author,number \
             --jq 'map(select(.number != '$current_pr_num'))[0].author.login')
           
-          # 열린 PR이 없는 경우 닫힌 PR 확인
+          # 열린 PR이 없는 경우 닫힌 PR 확인 (이때 현재 PR의 작성자와 다른 작성자를 선택)
           if [ -z "$previous_pr_author" ]; then
-            previous_pr_author=$(gh pr list --repo $current_repo --limit 1 --state closed --json author --jq '.[0].author.login')
+            previous_pr_author=$(gh pr list --limit 5 --state closed --json author \
+              --jq '.[] | select(.author.login != "'${{ github.actor }}'") | .author.login' | head -n 1)
           fi
           
           if [ -n "$previous_pr_author" ]; then
