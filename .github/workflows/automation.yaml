@@ -29,12 +29,12 @@ jobs:
           current_pr_num=${{ github.event.pull_request.number }}
           
           # 이전 PR의 작성자 가져오기 (열린 PR 우선, 없으면 닫힌 PR)
-          previous_pr_author=$(gh pr list --repo $current_repo --limit 2 --json author,num \
+          previous_pr_author=$(gh pr list --limit 2 --json author,num \
             --jq 'map(select(.number != '$current_pr_num'))[0].author.login')
           
+          # 열린 PR이 없는 경우 닫힌 PR 확인
           if [ -z "$previous_pr_author" ]; then
-            # 열린 PR이 없는 경우 닫힌 PR 확인
-            previous_pr_author=$(gh pr list --repo $current_repo --limit 1 --state closed --json author --jq '.[0].author.login')
+            previous_pr_author=$(gh pr list --limit 1 --state closed --json author --jq '.[0].author.login')
           fi
           
           if [ -n "$previous_pr_author" ]; then
