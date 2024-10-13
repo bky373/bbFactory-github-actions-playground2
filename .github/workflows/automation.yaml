@@ -25,11 +25,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          current_repo=${{ github.repository }}
-          current_pr_num=${{ github.event.pull_request.number }}
+          current_pr_num=${{ github.event.number }}
           
           # 이전 PR의 작성자 가져오기 (열린 PR 우선, 없으면 닫힌 PR)
-          previous_pr_author=$(gh pr list --limit 2 --json author,num \
+          previous_pr_author=$(gh pr list --limit 2 --json author,number \
             --jq 'map(select(.number != '$current_pr_num'))[0].author.login')
           
           # 열린 PR이 없는 경우 닫힌 PR 확인
