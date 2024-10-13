@@ -30,7 +30,7 @@ jobs:
           
           # 이전 PR의 작성자 가져오기 (열린 PR 우선, 없으면 닫힌 PR)
           previous_pr_author=$(gh pr list --repo $current_repo --limit 2 --json author,num \
-            --jq 'map(select(.num != '$current_pr_num'))[0].author.login')
+            --jq 'map(select(.number != '$current_pr_num'))[0].author.login')
           
           if [ -z "$previous_pr_author" ]; then
             # 열린 PR이 없는 경우 닫힌 PR 확인
