@@ -27,7 +27,7 @@ jobs:
           current_repo=${{ github.repository }}
           current_pr_num=${{ github.event.number }}
 
-          # 최근 5개의 PR 중에서 현재 PR 작성자와 다른 작성자 찾기
+          # 최근 5개의 PR 중 현재 PR 작성자와 다른 작성자 찾기
           previous_pr_author=$(gh pr list --repo $current_repo --limit 5 --state all --json number,author \
             --jq '[.[] | select(.number != '$current_pr_num' and .author.login != "'$current_pr_author'")][0].author.login')
 
