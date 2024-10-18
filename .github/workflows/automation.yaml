@@ -26,16 +26,23 @@ jobs:
         run: |
           current_repo=${{ github.repository }}
           current_pr_num=${{ github.event.number }}
-          
+
           # 최근 3개의 PR 중 현재 PR 작성자와 다른 작성자 찾기 ()
           previous_pr_author=$(gh pr list --repo $current_repo \
-            --search "number:<$current_pr_num sort:created-desc" \
+            --search "sort:created-desc" \
             --limit 3 --json number,author \
-            --jq 'map(select(.number < $current_pr_num))[0].number')
+            --jq 'map(select(.number < $current_pr_num))[0].author.login')
+          
+          previous_pr_num=$(gh pr list --repo $current_repo \
+            --search "sort:created-desc" \
+            --limit 3 --json number,author \
+            --jq 'map(select(.number < $current_pr_num))[0].number)
 
           if [ -n "$previous_pr_author" ]; then
             gh pr edit $current_pr_num --repo $current_repo --add-reviewer bbFactory
             echo "previous_pr_author: $previous_pr_author"
+            echo "previous_pr_num: $previous_pr_num"
           else
+            echo "❌ No previous PR author found to assign as reviewer"
             exit 1
           fi
