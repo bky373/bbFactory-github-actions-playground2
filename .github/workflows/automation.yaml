@@ -40,7 +40,7 @@ jobs:
           previous_pr_num=$(gh pr list --repo $current_repo \
             --search "number:<${{ github.event.number }} sort:created-desc" \
             --limit 3 --json number,author \
-            --jq 'map(select(.number < ${{ github.event.number }}))[0].number)
+            --jq 'map(select(.number < ${{ github.event.number }}))[0].number')
           
           previous_pr_num2=$(gh pr list --repo $current_repo \
             --search "sort:created-desc" \
