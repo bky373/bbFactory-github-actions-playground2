@@ -28,10 +28,10 @@ jobs:
           current_pr_num=${{ github.event.number }}
 
           # 최근 3개의 PR 중 현재 PR 작성자와 다른 작성자 찾기 ()
-          previous_pr_author=$(gh pr list \
-            --search "number:<$current_pr_num -is:closed sort:created-desc -author:bbFactory" \
+          previous_pr_author=$(gh pr list --repo $current_repo \
+            --search "number:<$current_pr_num -is:closed sort:created-desc -author:${{ github.actor }}" \
             --limit 3 --json number,author \
-            --jq '.[0].author.login')
+            --jq 'map(select(.number < '$current_pr_num'))[0].author.login')
 
           if [ -n "$previous_pr_author" ]; then
             gh pr edit $current_pr_num --repo $current_repo --add-reviewer bbFactory
