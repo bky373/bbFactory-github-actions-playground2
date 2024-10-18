@@ -27,20 +27,20 @@ jobs:
           current_repo=${{ github.repository }}
 
           # 최근 3개의 PR 중 현재 PR 작성자와 다른 작성자 찾기 ()
-          previous_pr_author=$(gh pr list --repo $current_repo \
-            --search "number:<${{ github.event.number }} sort:created-desc" \
-            --limit 3 --json number,author \
-            --jq 'map(select(.number < ${{ github.event.number }}))[0].author.login')
+#          previous_pr_author=$(gh pr list --repo $current_repo \
+#            --search "number:<${{ github.event.number }} sort:created-desc" \
+#            --limit 3 --json number,author \
+#            --jq 'map(select(.number < ${{ github.event.number }}))[0].author.login')
           
           previous_pr_author2=$(gh pr list --repo $current_repo \
             --search "sort:created-desc" \
             --limit 3 --json number,author \
             --jq '.[0].author.login')
           
-          previous_pr_num=$(gh pr list --repo $current_repo \
-            --search "number:<${{ github.event.number }} sort:created-desc" \
-            --limit 3 --json number,author \
-            --jq 'map(select(.number < ${{ github.event.number }}))[0].number')
+#          previous_pr_num=$(gh pr list --repo $current_repo \
+#            --search "number:<${{ github.event.number }} sort:created-desc" \
+#            --limit 3 --json number,author \
+#            --jq 'map(select(.number < ${{ github.event.number }}))[0].number')
           
           previous_pr_num2=$(gh pr list --repo $current_repo \
             --search "sort:created-desc" \
@@ -49,9 +49,9 @@ jobs:
 
           if [ -n "$previous_pr_author" ]; then
             gh pr edit ${{ github.event.number }} --repo $current_repo --add-reviewer bbFactory
-            echo "previous_pr_author: $previous_pr_author"
+#            echo "previous_pr_author: $previous_pr_author"
             echo "previous_pr_author2: $previous_pr_author2"
-            echo "previous_pr_num: $previous_pr_num"
+#            echo "previous_pr_num: $previous_pr_num"
             echo "previous_pr_num2: $previous_pr_num2"
           else
             echo "❌ No previous PR author found to assign as reviewer"
