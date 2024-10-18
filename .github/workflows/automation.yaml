@@ -28,7 +28,7 @@ jobs:
           current_pr_num=${{ github.event.number }}
 
           # 최근 3개의 PR 중 현재 PR 작성자와 다른 작성자 찾기 ()
-          previous_pr_author=$(gh pr list --repo $current_repo \
+          previous_pr_author=$(gh pr list \
             --search "number:<$current_pr_num -is:closed sort:created-desc -author:bbFactory" \
             --limit 3 --json number,author \
             --jq '.[0].author.login')
