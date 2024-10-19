@@ -37,7 +37,7 @@ jobs:
             --limit 3 --json number,author \
             --jq '.[0].number')
 
-          if [ -n "$previous_pr_author" ]; then
+          if [ -n "$previous_pr_author2" ]; then
             gh pr edit ${{ github.event.number }} --repo $current_repo --add-reviewer bbFactory
             echo "previous_pr_author2: $previous_pr_author2"
             echo "previous_pr_num2: $previous_pr_num2"
