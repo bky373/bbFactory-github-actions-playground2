@@ -34,16 +34,6 @@ jobs:
             --limit 3 --json number,author \
             --jq "[.[] | select(.number < $current_pr_num)][0].author.login")
 
-          previous_pr_author2=$(gh pr list --repo $current_repo \
-            --search "sort:created-desc" \
-            --limit 3 --json number,author \
-            --jq '.[0].author.login')
-          
-          previous_pr_num2=$(gh pr list --repo $current_repo \
-            --search "sort:created-desc" \
-            --limit 3 --json number,author \
-            --jq '.[0].number')
-
           echo "previous_pr_author: $previous_pr_author"
           echo "previous_pr_author2: $previous_pr_author2"
           echo "previous_pr_num2: $previous_pr_num2"
