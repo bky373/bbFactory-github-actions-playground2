@@ -57,3 +57,4 @@ jobs:
           echo "a4: $a4"
           echo "a5: $a5"
           echo "a6: $a6"
+          echo "a6: $a6"
