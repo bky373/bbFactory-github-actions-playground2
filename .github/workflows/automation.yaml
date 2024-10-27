@@ -17,7 +17,7 @@ jobs:
         with:
           repo-token: ${{ github.token }}
 
-  # https://cli.github.com/manual/gh_pr_list
+  # https://cli.github.com/manual/gh_pr
   assign-reviewer:
     runs-on: ubuntu-latest
     steps:
@@ -31,16 +31,14 @@ jobs:
           # 직전 PR 중에서 현재 PR 작성자와 다른 작성자 찾기
           a1=$(gh pr list --repo ${{ github.repository }} \
             --state all \
-            --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc" \
+            --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc -author:${{ github.actor }}" \
             --limit 3 \
             --json number,author \
             --jq "[.[] | select(.number < $current_pr_num)][0].author.login")
 
-          a2=$(gh pr list --repo ${{ github.repository }} \
-            --state all \
-            --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc" \
-            --limit 3)
-
-          echo "a1: $a1"
-          echo "a2: $a2"
-          echo "a2: $a2"
+          if [ -n "$previous_pr_author" ]; then
+            gh pr edit $current_pr_num --repo $current_repo --add-reviewer $previous_pr_author
+          else
+            echo "❌ No previous PR author found to assign as reviewer"
+            exit 1
+          fi
