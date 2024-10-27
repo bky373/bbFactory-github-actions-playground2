@@ -34,14 +34,14 @@ jobs:
             --search "created:<${{ github.event.created_at }} sort:created-desc -author:${{ github.actor }}" \
             --limit 3 \
             --json number,author \
-            --jq "[.[] | select(.number < $current_pr_num)][0].author.login")
+            --jq "map(select(.number < $current_pr_num))[0].author.login")
 
           previous_pr_author2=$(gh pr list --repo $current_repo \
             --state all \
             --search "created:<${{ github.event.created_at }} sort:created-desc author:${{ github.actor }}" \
             --limit 3 \
             --json number,author \
-            --jq "[.[] | select(.number < $current_pr_num)][0].author.login")
+            --jq "map(select(.number < $current_pr_num))[0].author.login")
 
           echo "previous_pr_author: $previous_pr_author1"
           echo "previous_pr_author2: $previous_pr_author2"
