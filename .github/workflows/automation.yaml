@@ -31,14 +31,14 @@ jobs:
           # 직전 PR 중에서 현재 PR 작성자와 다른 작성자 찾기
           previous_pr_author=$(gh pr list --repo $current_repo \
             --state all \
-            --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc -author:${{ github.actor }}" \
+            --search "created:<${{ github.event.created_at }} sort:created-desc -author:${{ github.actor }}" \
             --limit 3 \
             --json number,author \
             --jq "[.[] | select(.number < $current_pr_num)][0].author.login")
 
           previous_pr_author2=$(gh pr list --repo $current_repo \
             --state all \
-            --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc author:${{ github.actor }}" \
+            --search "created:<${{ github.event.created_at }} sort:created-desc author:${{ github.actor }}" \
             --limit 3 \
             --json number,author \
             --jq "[.[] | select(.number < $current_pr_num)][0].author.login")
