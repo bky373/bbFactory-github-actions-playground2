@@ -50,7 +50,8 @@ jobs:
             --limit 3)
             
           a6=$(gh pr list --repo ${{ github.repository }} --limit 3)
-            
+          a6=$(gh pr list --repo "${{ github.repository }}" --limit 3 --json number | jq '.[].number')
+
           echo "a1: $a1"
           echo "a2: $a2"
           echo "a3: $a3"
