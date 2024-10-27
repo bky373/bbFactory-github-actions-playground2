@@ -28,20 +28,20 @@ jobs:
           current_pr_num=${{ github.event.number }}
 
           # 직전 PR 중에서 현재 PR 작성자와 다른 작성자 찾기
-          a1=$(gh pr list --repo $current_repo \
+          a1=$(gh pr list --repo ${{ github.repository }} \
             --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc" \
             --limit 3 --json number,author \
             --jq "[.[] | select(.number < $current_pr_num)][0].author.login")
 
-          a2=$(gh pr list --repo $current_repo \
+          a2=$(gh pr list --repo ${{ github.repository }} \
             --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc" \
             --json number,author \
             --jq "[.[] | select(.number < $current_pr_num)][0].author.login")
 
-          a3=$(gh pr list --repo $current_repo \
+          a3=$(gh pr list --repo ${{ github.repository }} \
             --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc")
   
-          a4=$(gh pr list --repo $current_repo \
+          a4=$(gh pr list --repo ${{ github.repository }} \
             --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc" \
             --json number,author)
     
