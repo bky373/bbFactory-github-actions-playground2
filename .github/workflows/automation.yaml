@@ -40,13 +40,20 @@ jobs:
 
           a3=$(gh pr list --repo ${{ github.repository }} \
             --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc")
-  
+          
           a4=$(gh pr list --repo ${{ github.repository }} \
             --search "created:<${{ github.event.pull_request.created_at }} sort:created-desc" \
             --json number,author)
-    
+
+          a5=$(gh pr list --repo ${{ github.repository }} \
+            --search "sort:created-desc" \
+            --limit 3)
+            
+          a6=$(gh pr list --repo ${{ github.repository }} --limit 3)
+            
           echo "a1: $a1"
           echo "a2: $a2"
           echo "a3: $a3"
           echo "a4: $a4"
-          echo "a4: $a4"
+          echo "a5: $a5"
+          echo "a6: $a6"
