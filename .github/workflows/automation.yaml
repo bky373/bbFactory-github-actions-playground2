@@ -43,3 +43,4 @@ jobs:
 
           echo "a1: $a1"
           echo "a2: $a2"
+          echo "a2: $a2"
