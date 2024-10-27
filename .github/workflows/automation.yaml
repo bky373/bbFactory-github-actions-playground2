@@ -35,5 +35,3 @@ jobs:
             --jq "[.[] | select(.number < $current_pr_num)][0].author.login")
 
           echo "previous_pr_author: $previous_pr_author"
-          echo "previous_pr_author2: $previous_pr_author2"
-          echo "previous_pr_num2: $previous_pr_num2"
